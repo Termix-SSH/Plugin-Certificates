@@ -90,6 +90,43 @@ describe(`${manifest.id} activate`, () => {
     expect(rendered.registered.tabs()).toEqual(["certificates"]);
   });
 
+  it("adds a homepage widget and a panel switch", async () => {
+    rendered = await renderWithApp(plugin, {
+      manifest,
+      locales,
+      permissions: ["certificates.use"],
+      hosts: [{ id: "7", name: "apps", ip: "10.0.0.7", port: 22 }],
+      api: {
+        get: vi.fn(async () => ({
+          data: [
+            {
+              hostId: 7,
+              certs: [{ name: "example.com", client: "certbot", daysLeft: 5 }],
+              checkedAt: "",
+            },
+          ],
+        })),
+      } as never,
+    });
+    expect(rendered.registered.extensions("homepage.widgets")).toEqual([
+      "certificates_expiring_widget",
+    ]);
+    expect(manifest.contributes.uses).toContain("homepage.widgets");
+    const fields = (
+      manifest.contributes.settings as {
+        host: { fields: Array<{ key: string }> };
+      }
+    ).host.fields.map((f) => f.key);
+    expect(fields).toContain("showPanel");
+    rendered.renderExtension(
+      "homepage.widgets",
+      "certificates_expiring_widget",
+      "view",
+      { widget: { title: null }, config: {} },
+    );
+    expect(await screen.findByText("example.com")).toBeTruthy();
+  });
+
   it("lists certificates with days left", async () => {
     rendered = await renderWithApp(plugin, {
       manifest,
