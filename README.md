@@ -28,6 +28,7 @@ Read the [docs](https://docs.termix.site/plugins/certificates) to set it up and 
 - See how automatic renewal is set up
 - Get an alert before a certificate expires
 - A dashboard card with the certificates that expire next and a Certificates card in Host Metrics
+- Renew and revoke through Termix actions, with expiring certificates as a status tile
 
 <br />
 
