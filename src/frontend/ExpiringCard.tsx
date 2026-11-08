@@ -13,6 +13,7 @@ import {
   ListBadge,
   ListRow,
   PanelList,
+  LoadingState,
 } from "@termix-ssh/plugin-sdk/ui";
 import type { HostCertSummary } from "../shared/types";
 import { ExpiryBadge, expiryTone } from "./expiry";
@@ -22,7 +23,9 @@ const WARN_DAYS = 14;
 const SHOWN = 30;
 
 /** Dashboard card: the certificates that expire next across hosts. */
-export function ExpiringCard({ isVisible }: DashboardCardProps) {
+export function ExpiringCard({
+  isVisible,
+}: Pick<DashboardCardProps, "isVisible">) {
   const { t } = useTranslation();
   const allowed = usePermission("use");
   const api = usePluginApi();
@@ -57,9 +60,7 @@ export function ExpiringCard({ isVisible }: DashboardCardProps) {
 
   if (!allowed) return null;
   if (!rows) {
-    return (
-      <p className="p-3 text-xs text-muted-foreground">{t("card.loading")}</p>
-    );
+    return <LoadingState compact label={t("card.loading")} />;
   }
 
   const certs = rows
